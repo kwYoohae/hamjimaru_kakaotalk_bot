@@ -9,7 +9,7 @@
  
   
   ## 개발자
-  > `syw2045`   
-  > `KiKi-Daehaksaeng`
+  > `bjybs123`     
+  > `KiKi-Daehaksaeng`    
   > `kwyoohae`  
   
