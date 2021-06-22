@@ -1,19 +1,58 @@
-
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename #버전 변경으로 이렇게 사용
 
 app = Flask(__name__) 
 
-@app.route("/")
-def hello(): 
-    return "Hello Flask!!!!!!!"
+@app.route("/")# '/' route 기본 화면
+def Hello():
+    return "Hello!"
 
-@app.route("/upload")
+@app.route("/keyboard")                        #버튼 지정
+def keyboard(): 
+    dataSend = {    
+        "type" : "buttons",     
+        "buttons" : ["오늘의 메뉴" , "도움말"]
+    }
+    print(dataSend)
+    print("\n")
+    print(jsonify(dataSend))
+    return jsonify(dataSend)
+
+
+@app.route("/message", methods = ['POST'])
+def Message():
+    dataRecieve = request.get_json()
+    user_input = dataRecieve["content"]
+    if user_input == u"오늘의 메뉴":            # prefix 'u'는 unicode문자열 변환
+         dataSend = {
+            "message":{
+                "text" : "오늘의 메뉴입니다.....\n"         #해당 위치에 크롤링한 내용을 출력한다
+            },
+            "keyboard":{                        # 버튼 재지정
+                "type" : "buttons",
+                "buttons" : ["오늘의 메뉴" , "도움말"]
+            }
+        }
+    elif user_input == u"도움말":
+        dataSend = {
+            "message":{
+                "text" : "도움말입니다.\n"
+            },
+            "keyboard":{
+                "type" : "buttons",
+                "buttons" : ["오늘의 메뉴" , "도움말"]
+            }
+        }
+    return jsonify(dataSend)
+
+
+@app.route("/upload") 
 def render_file():
     return render_template('upload.html')
 
-@app.route('/fileUpload', methods = ['GET', 'POST'])
+
+@app.route('/fileUpload', methods = ['GET', 'POST']) 
 def upload_file():
     if request.method == 'POST':
         f = request.files['file']
