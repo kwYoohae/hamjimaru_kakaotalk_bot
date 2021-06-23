@@ -20,9 +20,10 @@ def keyboard():
     return jsonify(dataSend)
 
 
-@app.route("/message", methods = ['POST'])
+@app.route("/message", methods = ['POST','GET'])
 def Message():
     dataRecieve = request.get_json()
+    print(dataRecieve)
     user_input = dataRecieve["content"]
     if user_input == u"오늘의 메뉴":            # prefix 'u'는 unicode문자열 변환
          dataSend = {
