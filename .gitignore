@@ -1,0 +1,6 @@
+## ignorefile
+
+*.png
+*.csv
+*.out
+*.log
