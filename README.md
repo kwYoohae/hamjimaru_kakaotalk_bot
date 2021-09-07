@@ -20,7 +20,7 @@
 
 - `pip install pandas`
 - `pip install bs4`
-- `pip install selenum`
+- `pip install selenium`
 - `pip install flask`
 
 ## ✔️추후 추가기능
