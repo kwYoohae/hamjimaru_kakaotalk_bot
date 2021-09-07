@@ -24,7 +24,7 @@ def remove_residue(string):
 
 
 # chromedriver 경로설정
-chromedriver = '/home/hamji/hamjimaru_kakaotalk_bot/python_test/chromedriver'
+chromedriver = '/home/hanium/hamjimaru_kakaotalk_bot/python_test/chromedriver'
 driver = webdriver.Chrome(chromedriver, options=chrome_options)
 driver.implicitly_wait(1)
 driver.get('https://www.kw.ac.kr/ko/life/facility11.jsp')  # 스크래핑할 url 입력
