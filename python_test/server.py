@@ -1,67 +1,218 @@
+from flask import Flask, json, request, jsonify
+import sys
 import os
-from flask import Flask, render_template, request, jsonify
-from werkzeug.utils import secure_filename #버전 변경으로 이렇게 사용
+import datetime
+import pandas as pd
 
-app = Flask(__name__) 
+app = Flask(__name__)
 
-@app.route("/")# '/' route 기본 화면
-def Hello():
-    return "Hello!"
+menuData = pd.read_csv("./table.csv",  header = None, encoding = "utf=8")
 
-@app.route("/keyboard")                        #버튼 지정
-def keyboard(): 
-    dataSend = {    
-        "type" : "buttons",     
-        "buttons" : ["오늘의 메뉴" , "도움말"]
+def get_img_content(coding='utf-8'):
+    with open('./TodayPicture/TodayMenu.png', 'rb') as f:
+        img_data = base64.b64encode(f.read()).decode(coding)
+        return img_data
+
+
+@app.route('/keyboard')
+def Keyboard():
+    dataSend = {
+        'type': 'buttons',
+        'buttons': ['명령어']
     }
-    print(dataSend)
-    print("\n")
-    print(jsonify(dataSend))
     return jsonify(dataSend)
 
 
-@app.route("/message", methods = ['POST','GET'])
+@app.route('/message', methods=['POST'])
 def Message():
-    dataRecieve = request.get_json()
-    print(dataRecieve)
-    user_input = dataRecieve["content"]
-    if user_input == u"오늘의 메뉴":            # prefix 'u'는 unicode문자열 변환
-         dataSend = {
-            "message":{
-                "text" : "오늘의 메뉴입니다.....\n"         #해당 위치에 크롤링한 내용을 출력한다
-            },
-            "keyboard":{                        # 버튼 재지정
-                "type" : "buttons",
-                "buttons" : ["오늘의 메뉴" , "도움말"]
+    req = request.get_json()
+    content = req["userRequest"]["utterance"]
+    content = content.replace("\n", "")
+    id_value = req["userRequest"]["user"]["id"]
+    block_value = req["userRequest"]["block"]["id"]
+    days = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일']
+    dayweek = datetime.datetime.today().weekday()
+    # print(content)
+    if content == "월요일 메뉴":
+        day_weeks = req["action"]["detailParams"]["day_of_the_week"]["value"]
+        dataSend = {
+            "version": "2.0",
+            "template": {
+                "outputs": [
+                    {
+                        "carousel": {
+                            "type": "basicCard",
+                            "items": [
+                                {
+                                    "title": day_weeks,
+                                    "description": menuData[0][1]
+                                }
+                            ]
+                        }
+                    }
+                ]
             }
         }
-    elif user_input == u"도움말":
+    elif content == "화요일 메뉴":
+        day_weeks = req["action"]["detailParams"]["day_of_the_week"]["value"]
         dataSend = {
-            "message":{
-                "text" : "도움말입니다.\n"
-            },
-            "keyboard":{
-                "type" : "buttons",
-                "buttons" : ["오늘의 메뉴" , "도움말"]
+            "version": "2.0",
+            "template": {
+                "outputs": [
+                    {
+                        "carousel": {
+                            "type": "basicCard",
+                            "items": [
+                                {
+                                    "title": day_weeks,
+                                    "description": menuData[1][1]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    elif content == "수요일 메뉴":
+        day_weeks = req["action"]["detailParams"]["day_of_the_week"]["value"]
+        dataSend = {
+            "version": "2.0",
+            "template": {
+                "outputs": [
+                    {
+                        "carousel": {
+                            "type": "basicCard",
+                            "items": [
+                                {
+                                    "title": day_weeks,
+                                    "description": menuData[2][1]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    elif content == "목요일 메뉴":
+        day_weeks = req["action"]["detailParams"]["day_of_the_week"]["value"]
+        dataSend = {
+            "version": "2.0",
+            "template": {
+                "outputs": [
+                    {
+                        "carousel": {
+                            "type": "basicCard",
+                            "items": [
+                                {
+                                    "title": day_weeks,
+                                    "description": menuData[3][1]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    elif content == "금요일 메뉴":
+        day_weeks = req["action"]["detailParams"]["day_of_the_week"]["value"]
+        dataSend = {
+            "version": "2.0",
+            "template": {
+                "outputs": [
+                    {
+                        "carousel": {
+                            "type": "basicCard",
+                            "items": [
+                                {
+                                    "title": day_weeks,
+                                    "description": menuData[4][1]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    elif content == "내일의 메뉴":
+        day_weeks = req["action"]["detailParams"]["day_of_the_week"]["value"]
+        if dayweek + 1 >= 6:
+            dataSend = {
+                "version": "2.0",
+                "template": {
+                    "outputs": [
+                        {
+                            "carousel": {
+                                "type": "basicCard",
+                                "items": [
+                                    {
+                                        "title": day_weeks,
+                                        "description": "안뇨오옹"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+    elif content == "오늘 밥은?":
+        dataSend = {
+            "version": "2.0",
+            "template": {
+                "outputs": [{
+                    "simpleText": {
+                        "text": "메뉴를 눌러주세요"
+                    }
+                }],
+                "quickReplies": [
+                    {
+                        "action": "message",
+                        "label": "월요일 메뉴",
+                        "messageText": "월요일 메뉴"
+                    },
+                    {
+                        "action": "message",
+                        "label": "화요일 메뉴",
+                        "messageText": "화요일 메뉴"
+                    },
+                    {
+                        "action": "message",
+                        "label": "수요일 메뉴",
+                        "messageText": "수요일 메뉴"
+                    },
+                    {
+                        "action": "message",
+                        "label": "목요일 메뉴",
+                        "messageText": "목요일 메뉴"
+                    },
+                    {
+                        "action": "message",
+                        "label": "금요일 메뉴",
+                        "messageText": "금요일 메뉴"
+                    }
+                ]
+            }
+        }
+    else:
+        dataSend = {
+            "version": "2.0",
+            "template": {
+                "outputs": [
+                    {
+                        "simpleText": {
+                            "text": "잘못된 입력입니다. 메뉴가 궁금하시면 다음버튼을 눌러주세요"
+                        }
+                    }],
+                "quickReplies": [
+                    {
+                        "action": "message",
+                        "label": "오늘 밥은?",
+                        "messageText": "오늘 밥은?"
+                    }
+                ],
             }
         }
     return jsonify(dataSend)
 
 
-@app.route("/upload") 
-def render_file():
-    return render_template('upload.html')
-
-
-@app.route('/fileUpload', methods = ['GET', 'POST']) 
-def upload_file():
-    if request.method == 'POST':
-        f = request.files['file']
-        if os.path.isfile('./TodayPicture/TodayMenu.png') == True:
-            os.remove(r'./TodayPicture/TodayMenu.png')
-        f.save('./TodayPicture/TodayMenu.' + secure_filename(f.filename))
-        return '파일 업로드 성공'
-
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000,debug=True) # 서버 설정 그대로 놔둘것
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
