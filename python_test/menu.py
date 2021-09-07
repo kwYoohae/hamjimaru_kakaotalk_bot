@@ -62,7 +62,7 @@ for tr in tbody:
 
 data= [diet1,diet2]
 toSave = pd.DataFrame(data)
-toSave.to_csv("/home/hamji/hamjimaru_kakaotalk_bot/python_test/table_JP.csv", index=False, header=False, encoding="utf-8")
+toSave.to_csv("/home/hanium/hamjimaru_kakaotalk_bot/python_test/table.csv", index=False, header=False, encoding="utf-8")
 
 now =datetime.datetime.now()
 with open("/log/log.txt",'a') as f:
