@@ -5,11 +5,10 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from html_table_parser import parser_functions as parser
 import pandas as pd
-from datetime import datetime
+import datetime
 from pandas import Series, DataFrame
-import schedule
 import time
-
+import schedule
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--no--sandbox')
@@ -26,10 +25,11 @@ def remove_residue(string):
 		removed += string[i]
 	return removed
 
-def job():
+
 # chromedriver 경로설정
-	chromedriver = './chromedriver'
-	driver = webdriver.Chrome(chromedriver, options=chrome_options)
+chromedriver = './chromedriver'
+driver = webdriver.Chrome(chromedriver, options=chrome_options)
+def job():
 	driver.implicitly_wait(1)
 	driver.get('https://www.kw.ac.kr/ko/life/facility11.jsp')  # 스크래핑할 url 입력
 	driver.implicitly_wait(1)
@@ -68,12 +68,13 @@ def job():
 	toSave = pd.DataFrame(data)
 	toSave.to_csv("./table.csv", index=False, header=False, encoding="utf-8")
 
-	now =datetime.now()
-	now = str(now)
-	with open("./logMenu.txt",'a') as f:
-		f.write("["+now+"] "+" update the diet!\n")
-	f.close()
-schedule.every(3).hours.do(job)
+	now =datetime.datetime.now()
+	now =str(now)
+	with open("./log.txt",'a') as f:
+		f.write("["+now+"] "+"update the diet!\n")
+		f.close()
+
+schedule.every(3).hours.do(job);
 
 while True:
 	schedule.run_pending()
