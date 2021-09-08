@@ -74,7 +74,7 @@ def job():
 		f.write("["+now+"] "+"update the diet!\n")
 		f.close()
 
-schedule.every(10).seconds.do(job);
+schedule.every(3).hours.do(job);
 
 while True:
 	schedule.run_pending()
