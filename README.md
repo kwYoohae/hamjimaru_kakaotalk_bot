@@ -13,7 +13,7 @@
 
 ## ✔️프로젝트 실행방법
 
-- `crontab -e`으로 `crontab` 파일에서 \* _/3 _ \* \* /파이썬 절대경로/ /파일 절대경로/ 추가
+- `nohup python3 menu.py 1> /dev/null 2>&1 &`을 사용하여 실행
 - `nohup python3 server.py &`를 사용하여 실행
 
 ## ✔️Python 의존성 설치

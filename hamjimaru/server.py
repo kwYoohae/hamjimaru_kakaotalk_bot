@@ -22,6 +22,9 @@ def Keyboard():
     }
     return jsonify(dataSend)
 
+@app.route('/test', methods=['GET'])
+def Test():
+    return "hello"
 
 @app.route('/message', methods=['POST'])
 def Message():
