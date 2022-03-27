@@ -8,7 +8,7 @@
 
 ## ✔️프로젝트 소개
 
-- `selenium`을 이용한 데이터 스크래핑을 이용하여 학식 메뉴를 불러와서 `table.csv`파일로 저장 후 호출마다 알려줌
+- `requests`을 이용한 데이터 스크래핑을 이용하여 학식 메뉴를 불러와서 `table.csv`파일로 저장 후 호출마다 알려줌
 - `Flask`를 사용해서 **POST** 요청 처리 후 정해진 Json 파일로 클라이언트에게 전송한다.
 
 ## ✔️프로젝트 실행방법
@@ -20,8 +20,9 @@
 
 - `pip install pandas`
 - `pip install bs4`
-- `pip install selenium`
+- `pip install requests`
 - `pip install flask`
+- `pip install schedule`
 
 ## ✔️추후 추가기능
 
