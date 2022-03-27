@@ -20,7 +20,7 @@
 
 - `pip install pandas`
 - `pip install bs4`
-- `pip install selenium`
+- `pip install requests`
 - `pip install flask`
 - `pip install schedule`
 
