@@ -1,70 +1,27 @@
 #-*- coding: utf-8 -*-
 #!/usr/bin/env python3
-from selenium import webdriver
-from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from html_table_parser import parser_functions as parser
 import pandas as pd
 import datetime
-from pandas import Series, DataFrame
+import requests
 import time
 import schedule
 
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument('--no--sandbox')
-chrome_options.add_argument("--single-process")
-chrome_options.add_argument('--headless')
-chrome_options.add_argument("--disable-dev-shm-usage")
+headers = {
+	"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36"
+}
 
-def remove_residue(string):
-	removed = ""
-	for i in range(len(string)):
-		if string[i] == '\n':
-			if string[i + 1] == '\n':
-				break
-		removed += string[i]
-	return removed
-
-
-# chromedriver 경로설정
-chromedriver = './chromedriver'
-driver = webdriver.Chrome(chromedriver, options=chrome_options)
 def job():
-	driver.implicitly_wait(1)
-	driver.get('https://www.kw.ac.kr/ko/life/facility11.jsp')  # 스크래핑할 url 입력
-	driver.implicitly_wait(1)
+	r = requests.get('https://www.kw.ac.kr/ko/life/facility11.jsp', headers=headers)
+	soup = BeautifulSoup(r.text, 'html.parser')
+	table = soup.find('table', {'class': 'tbl-list'})
+	thead = table.find('thead')
+	tbody = table.find('tbody')
 
-	table = driver.find_element_by_xpath("//*[@id=\"item_body\"]/div[3]/div/div[1]/article/div[3]/div/section/div/table")
-	thead = table.find_elements_by_tag_name("thead")
-	tbody = table.find_elements_by_tag_name("tbody")
-
-	for tr in thead:
-		th= tr.find_elements_by_tag_name("th")
-		mon=th[1].text
-		tue=th[2].text
-		wed=th[3].text
-		thu=th[4].text
-		fri=th[5].text
-
-	#print("first command")
-	#print('월:{0}, 화:{1}, 수:{2}, 목:{3}, 금:{4}'.format(mon,tue,wed,thu,fri))
-		diet1 =[mon, tue, wed, thu, fri]
-		m1={mon,tue,wed,thu,fri}    
-		
-	for tr in tbody:
-		td= tr.find_elements_by_tag_name("td")
-		mon = remove_residue(td[1].text)
-		tue = remove_residue(td[2].text)
-		wed = remove_residue(td[3].text)
-		thu = remove_residue(td[4].text)
-		fri = remove_residue(td[5].text)
-
-
-	#print("second command")
-	#print('월:{0}, 화:{1}, 수:{2}, 목:{3}, 금:{4}'.format(mon,tue,wed,thu,fri))
-		diet2 =[mon, tue, wed, thu, fri]
-
+	diet1 = map(lambda node: node.text.replace("\n",""), thead.findAll("th")[1:])
+	diet2 = map(lambda node: node.text, tbody.findAll("td")[1:])
 	data= [diet1,diet2]
+	
 	toSave = pd.DataFrame(data)
 	toSave.to_csv("./table.csv", index=False, header=False, encoding="utf-8")
 
@@ -74,9 +31,8 @@ def job():
 		f.write("["+now+"] "+"update the diet!\n")
 		f.close()
 
-schedule.every(3).hours.do(job);
+schedule.every(3).hours.do(job)
 
 while True:
 	schedule.run_pending()
 	time.sleep(1)
-driver.close()
